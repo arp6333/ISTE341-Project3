@@ -4,7 +4,7 @@ var Schema = mongoose.Schema;
 const DepartmentSchema = new Schema({
   company: {
     type: String,
-    allowNull: false,
+    default: 'arp6333'
   },
   dept_name: {
     type: String,
