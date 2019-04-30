@@ -1,6 +1,6 @@
 var express = require('express'),
   app = express(),
-  port = process.env.PORT || 8080,
+  port = 8080,
   mongoose = require('mongoose'),
   Dept = require('./src/models/departmentModel'),
   Emp = require('./src/models/employeeModel'),
@@ -8,7 +8,7 @@ var express = require('express'),
   bodyParser = require('body-parser');
   
 mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost:8080', {useNewUrlParser: true});
+mongoose.connect('mongodb://localhost:27017/CompanyServices', {useNewUrlParser: true});
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
