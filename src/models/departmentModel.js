@@ -19,9 +19,9 @@ const DepartmentSchema = new Schema({
     allowNull: false,
   },
   dept_id: {
-    type: int,
+    type: Number,
     allowNull: false,
   }
 });
 
-module.exports = mongoose.model('Department', TaskSchema);
+module.exports = mongoose.model('Departments', DepartmentSchema);

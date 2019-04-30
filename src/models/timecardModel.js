@@ -11,7 +11,7 @@ const TimecardSchema = new Schema({
     allowNull: false,
   },
   timecard_id: {
-    type: int,
+    type: Number,
     allowNull: false
   },
   emp_id: {
@@ -21,4 +21,4 @@ const TimecardSchema = new Schema({
   }
 });
 
-module.exports = mongoose.model('Timecards', TaskSchema);
+module.exports = mongoose.model('Timecards', TimecardSchema);

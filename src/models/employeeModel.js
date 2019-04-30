@@ -7,7 +7,7 @@ const EmployeeSchema = new Schema({
     allowNull: false,
   },
   salary: {
-    type: double,
+    type: Number,
     allowNull: false,
   },
   emp_name: {
@@ -28,7 +28,7 @@ const EmployeeSchema = new Schema({
     ref: 'Departments'
   },
   emp_id: {
-    type: int,
+    type: Number,
     allowNull: false,
   },
   mng_id: {
@@ -38,4 +38,4 @@ const EmployeeSchema = new Schema({
   }
 });
 
-module.exports = mongoose.model('Employees', TaskSchema);
+module.exports = mongoose.model('Employees', EmployeeSchema);
