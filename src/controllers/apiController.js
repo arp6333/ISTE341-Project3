@@ -201,25 +201,68 @@ exports.get_all_tcs = function(req, res) {
   });
 };
 
-TC.findOneAndUpdate({ dept_id: req.body.dept_id }, req.body, { new: true }, function(err, item) {
-  if(err) {
-    res.json({ 'error': err });
-  }
-  res.json("{ 'success':" + item + " }");
-});
-
 // Update a timecard
 exports.update_tc = function(req, res) {
   // emp_no must exist in our company
   Emp.find({ company: 'arp6333', emp_no: req.body.emp_no }, function(err, item) {
     if(err) {
-      
+      // start_time must be valid equal or up to a week ago from current time
+      var current = Date.now();
+      var oneWeekAgo = Date.now();
+      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+      if(req.body.start_time < oneWeekAgo || req.body.start_time > current){
+        res.json({ 'error': 'start_time must be equal to current date or up to a week ago.' });
+      }
+      // end_time must be valid at least 1 hr greater than start_time on same date
+      var hours = Math.abs(req.body.end_time - req.body.start_time) / (60*60*1000);
+      if(hours < 1){
+        res.json({ 'error': 'end_time must be at least one hour after start_time.' });
+      }
+      if(req.body.start_time.getFullYear() === req.body.end_time.getFullYear() && req.body.start_time.getMonth() === req.body.end_time.getMonth() && req.body.start_time.getDate() === req.body.end_time.getDate()) {
+        // start_time and end_time must be a weekday
+        if(req.body.start_time.prototype.getDay() == 0 || req.body.start_time.prototype.getDay() == 6 || req.body.end_time.prototype.getDay() == 0 || req.body.end_time.prototype.getDay() == 6) {
+          res.json({ 'error': 'hire_date must be on a weekday.' });
+        }
+        // start_time and end_time must be between 06:00:00 - 18:00:00 inclusive
+        var startTime = '06:00:00';
+        var endTime = '18:00:00'; 
+        startDate = new Date(req.body.start_time.getTime());
+        startDate.setHours(startTime.split(":")[0]);
+        startDate.setMinutes(startTime.split(":")[1]);
+        startDate.setSeconds(startTime.split(":")[2]);
+        endDate = new Date(req.body.start_time.getTime());
+        endDate.setHours(endTime.split(":")[0]);
+        endDate.setMinutes(endTime.split(":")[1]);
+        endDate.setSeconds(endTime.split(":")[2]);
+        if(startDate < req.body.start_time && endDate > req.body.start_time){
+          if(startDate < req.body.end_time && endDate > req.body.end_time){
+            // start_time cannot be on the same day as any other start_time
+            TC.find({ emp_no: req.body.emp_no, start_time: req.body.start_time }, function(err, item) {
+              if(err) {
+                res.json({ 'error': err });
+              }
+              else if(req.body.start_time.getFullYear() === item.start_time.getFullYear() && req.body.start_time.getMonth() === item.start_time.getMonth() && req.body.start_time.getDate() === item.start_time.getDate()){
+                res.json({ 'error': 'start_time cannot be on the same day as any other start time' });
+              }
+              TC.findOneAndUpdate({ timecard_id: req.body.timecard_id }, req.body, { new: true }, function(err, item) {
+                if(err) {
+                  res.json({ 'error': err });
+                }
+                res.json("{ 'success':" + item + " }");
+              });
+            });
+          }
+          res.json({ 'error': 'end_time must be between 06:00:00 - 18:00:00 inclusive' });
+        }
+        res.json({ 'error': 'start_time must be between 06:00:00 - 18:00:00 inclusive' });
+      }
+      res.json({ 'error': 'start_time and end_time are not on the same day.' });
     }
-    res.json({ 'error': 'Given dept_id already exists.' });
+    res.json({ 'error': 'Given emp_id does not exist in our company.' });
   });
 };
 
-// Create a department
+// Create a timecard
 exports.create_dept = function(req, res) {
   var add = new Dept(req.body);
   // dept_no cannot exist already
